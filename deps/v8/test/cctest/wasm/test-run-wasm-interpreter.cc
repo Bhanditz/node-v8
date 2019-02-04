@@ -192,7 +192,7 @@ TEST(Breakpoint_I32Add) {
   FOR_UINT32_INPUTS(a) {
     for (uint32_t b = 11; b < 3000000000u; b += 1000000000u) {
       thread->Reset();
-      WasmValue args[] = {WasmValue(*a), WasmValue(b)};
+      WasmValue args[] = {WasmValue(a), WasmValue(b)};
       thread->InitFrame(r.function(), args);
 
       for (int i = 0; i < kNumBreakpoints; i++) {
@@ -207,7 +207,7 @@ TEST(Breakpoint_I32Add) {
 
       // Check the thread finished with the right value.
       CHECK_EQ(WasmInterpreter::FINISHED, thread->state());
-      uint32_t expected = (*a) + (b);
+      uint32_t expected = (a) + (b);
       CHECK_EQ(expected, thread->GetReturnValue().to<uint32_t>());
     }
   }
@@ -227,7 +227,7 @@ TEST(Step_I32Mul) {
   FOR_UINT32_INPUTS(a) {
     for (uint32_t b = 33; b < 3000000000u; b += 1000000000u) {
       thread->Reset();
-      WasmValue args[] = {WasmValue(*a), WasmValue(b)};
+      WasmValue args[] = {WasmValue(a), WasmValue(b)};
       thread->InitFrame(r.function(), args);
 
       // Run instructions one by one.
@@ -242,7 +242,7 @@ TEST(Step_I32Mul) {
 
       // Check the thread finished with the right value.
       CHECK_EQ(WasmInterpreter::FINISHED, thread->state());
-      uint32_t expected = (*a) * (b);
+      uint32_t expected = (a) * (b);
       CHECK_EQ(expected, thread->GetReturnValue().to<uint32_t>());
     }
   }
@@ -269,7 +269,7 @@ TEST(Breakpoint_I32And_disable) {
         interpreter->SetBreakpoint(r.function(), kLocalsDeclSize + offsets[0],
                                    do_break);
         thread->Reset();
-        WasmValue args[] = {WasmValue(*a), WasmValue(b)};
+        WasmValue args[] = {WasmValue(a), WasmValue(b)};
         thread->InitFrame(r.function(), args);
 
         if (do_break) {
@@ -284,14 +284,14 @@ TEST(Breakpoint_I32And_disable) {
 
         // Check the thread finished with the right value.
         CHECK_EQ(WasmInterpreter::FINISHED, thread->state());
-        uint32_t expected = (*a) & (b);
+        uint32_t expected = (a) & (b);
         CHECK_EQ(expected, thread->GetReturnValue().to<uint32_t>());
       }
     }
   }
 }
 
-TEST(GrowMemory) {
+TEST(MemoryGrow) {
   {
     WasmRunner<int32_t, uint32_t> r(ExecutionTier::kInterpreter);
     r.builder().AddMemory(kWasmPageSize);
@@ -308,7 +308,7 @@ TEST(GrowMemory) {
   }
 }
 
-TEST(GrowMemoryPreservesData) {
+TEST(MemoryGrowPreservesData) {
   int32_t index = 16;
   int32_t value = 2335;
   WasmRunner<int32_t, uint32_t> r(ExecutionTier::kInterpreter);
@@ -320,7 +320,7 @@ TEST(GrowMemoryPreservesData) {
   CHECK_EQ(value, r.Call(1));
 }
 
-TEST(GrowMemoryInvalidSize) {
+TEST(MemoryGrowInvalidSize) {
   // Grow memory by an invalid amount without initial memory.
   WasmRunner<int32_t, uint32_t> r(ExecutionTier::kInterpreter);
   r.builder().AddMemory(kWasmPageSize);
